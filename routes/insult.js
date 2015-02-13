@@ -9,8 +9,10 @@ var availableInsults = ["thanks", "fascinating", "because", "bye", "diabetes"];
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+	if (req.headers.accept.match("application\/json"))
+		res.setHeader('Content-Type', 'application/json');
 	async.parallel([
-	    function(callback) {
+	    function (callback) {
 	    	var d = new Date();
 
 	    	// First, fetch today's name
@@ -24,8 +26,7 @@ router.get('/', function(req, res, next) {
 	    },
 	    function (callback) {
 	    	url = "http://foaas.herokuapp.com/" + drawInsult() + "/foo";
-	    	heads = { 'Accept': 'application/json',
-	    			  'User-Agent': 'Restler for node.js' };
+	    	heads = { 'Accept': 'application/json' };
 	    	
 	    	rest.get(url, {headers: heads}).on("complete", function (data) {
 	    		insult.message = data.message;
@@ -44,8 +45,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:year/:month/:day', function(req, res, next) {
+	if (req.headers.accept.match("application\/json"))
+		res.setHeader('Content-Type', 'application/json');
 	async.parallel([
-        function(callback) {
+	    function(callback) {
     	   url = "http://api.dryg.net/dagar/v2/" + req.params.year + "/"
     	   + req.params.month + "/" + req.params.day;
     	   rest.get(url, {parser: rest.parsers.json}).on('complete', function (data) {
@@ -56,8 +59,7 @@ router.get('/:year/:month/:day', function(req, res, next) {
         },
         function (callback) {
         	url = "http://foaas.herokuapp.com/" + drawInsult() + "/foo";
-        	heads = { 'Accept': 'application/json',
-        			'User-Agent': 'Restler for node.js' };
+        	heads = { 'Accept': 'application/json' };
 
         	rest.get(url, {headers: heads}).on("complete", function (data) {
         		insult.message = data.message;
