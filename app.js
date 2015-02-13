@@ -22,8 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/insult', insult);
+app.use('/', routes); // This is where the "index.html" service lives
+app.use('/insult', insult); // This is where the insult service lives
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
