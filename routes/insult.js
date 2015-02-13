@@ -4,13 +4,12 @@ var rest = require('restler');
 var router = express.Router();
 //var insult = require('../private_modules/insult');
 
-var name = null;
-var insult = null;
+var insult = { message: null, from: null };
 var availableInsults = ["thanks", "fascinating", "because", "bye", "diabetes"];
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	async.series([
+	async.parallel([
 	    function(callback) {
 	    	var d = new Date();
 
@@ -19,17 +18,17 @@ router.get('/', function(req, res, next) {
 	    	+ d.getMonth() + "/" + d.getDate();
 	    	rest.get(url, {parser: rest.parsers.json}).on('complete', function (data) {
 	    		// Cool, we have a name. Let's get the insult from FOaaS and return it.
-	    		name = firstElement(firstElement(data.dagar).namnsdag);
+	    		insult.from = firstElement(firstElement(data.dagar).namnsdag);
 	    		callback();
 	    	});
 	    },
 	    function (callback) {
-	    	url = "http://foaas.herokuapp.com/" + drawInsult() + "/" + name;
+	    	url = "http://foaas.herokuapp.com/" + drawInsult() + "/foo";
 	    	heads = { 'Accept': 'application/json',
 	    			  'User-Agent': 'Restler for node.js' };
 	    	
 	    	rest.get(url, {headers: heads}).on("complete", function (data) {
-	    		insult = data;
+	    		insult.message = data.message;
 	    		callback();
 	    	});
 	    }
@@ -45,23 +44,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:year/:month/:day', function(req, res, next) {
-	async.series([
+	async.parallel([
         function(callback) {
     	   url = "http://api.dryg.net/dagar/v2/" + req.params.year + "/"
     	   + req.params.month + "/" + req.params.day;
     	   rest.get(url, {parser: rest.parsers.json}).on('complete', function (data) {
     		   // Cool, we have a name. Let's get the insult from FOaaS and return it.
-    		   name = firstElement(firstElement(data.dagar).namnsdag);
+    		   insult.from = firstElement(firstElement(data.dagar).namnsdag);
     		   callback();
     	   });
         },
         function (callback) {
-        	url = "http://foaas.herokuapp.com/" + drawInsult() + "/" + name;
+        	url = "http://foaas.herokuapp.com/" + drawInsult() + "/foo";
         	heads = { 'Accept': 'application/json',
         			'User-Agent': 'Restler for node.js' };
 
         	rest.get(url, {headers: heads}).on("complete", function (data) {
-        		insult = data;
+        		insult.message = data.message;
         		callback();
         	});
         }
