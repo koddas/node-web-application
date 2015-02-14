@@ -9,7 +9,7 @@ var router = express.Router();
 
 // The insult object is visible to all functions. It is used to store both the
 // insult and the insulter's name
-var insult = { message: null, from: null };
+var insult = { message: null, signed: null };
 
 // The list of available insults is in fact a list of some of the endpoints
 // made available by the FOAAS web service.
@@ -34,7 +34,7 @@ router.get('/', function(req, res, next) {
 	    	rest.get(url, {parser: rest.parsers.json})
 	    		.on('complete', function (data) {
 	    		// Cool, we have a name. Let's update our insult object with it
-	    		insult.from = firstElement(firstElement(data.dagar).namnsdag);
+	    		insult.signed = firstElement(firstElement(data.dagar).namnsdag);
 	    		callback();
 	    	});
 	    },
@@ -85,7 +85,7 @@ router.get('/:year/:month/:day', function(req, res, next) {
     	   rest.get(url, {parser: rest.parsers.json})
     	   	   .on('complete', function (data) {
     		   // Cool, we have a name. Let's update our insult object with it
-    		   insult.from = firstElement(firstElement(data.dagar).namnsdag);
+    		   insult.signed = firstElement(firstElement(data.dagar).namnsdag);
     		   callback();
     	   });
         },
